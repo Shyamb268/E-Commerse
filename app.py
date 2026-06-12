@@ -11,10 +11,10 @@ import razorpay
 import pdfkit
 import re
 mydb = mysql.connector.connect(
-    user='ecomuser',
-    password='Shyam@268',
+    user='flaskuser',
+    password='password',
     host='localhost',
-    database='ecom'
+    database='flaskdb'
 )
 
 BASE_DIR=os.path.abspath(os.path.dirname(__file__))
