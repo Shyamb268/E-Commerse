@@ -141,12 +141,12 @@
             <button class="btn-buy me-2">Buy Now</button>
           </form>
 
-          <a href="#" 
+          <a href="{{url_for('addreview',itemid=itemdata[0])}}" 
              class="btn-review me-2">
              Add Review
           </a>
 
-          <a href="#" 
+          <a href="{{url_for('readreview',itemid=itemdata[0])}}" 
              class="btn-review">
              Read Reviews
           </a>
@@ -465,14 +465,14 @@
             <button class="btn-buy me-2">Buy Now</button>
           </form>
 
-          <a href="#" 
-             class="btn-review me-2">
-             Add Review
+          <a href="{{url_for('addreview',itemid=itemdata[0])}}" 
+            class="btn-review me-2">
+            Add Review
           </a>
 
-          <a href="#" 
-             class="btn-review">
-             Read Reviews
+          <a href="{{url_for('readreview',itemid=itemdata[0])}}" 
+            class="btn-review">
+            Read Reviews
           </a>
         </div>
 

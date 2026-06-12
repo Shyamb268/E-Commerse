@@ -179,7 +179,7 @@
         {% for item in ordered_items_list %}
         <tr>
           <td>{{ loop.index }}</td>
-          <td><a href="#"><img src="/static/uploads/{{ item[8] }}" class="item-img"></a></td>
+          <td><a href="{{ url_for('myorder_details', ordid=order_data[0]) }}"><img src="/static/uploads/{{ item[8] }}" class="item-img"></a></td>
           <td>{{ item[3] }}</td>
           <td>{{ item[7] }}</td>
           <td>{{ item[4] }}</td>

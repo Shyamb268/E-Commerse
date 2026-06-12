@@ -11,7 +11,7 @@ import razorpay
 import pdfkit
 import re
 mydb = mysql.connector.connect(
-    user='root',
+    user='ecomuser',
     password='Shyam@268',
     host='localhost',
     database='ecom'
@@ -31,6 +31,7 @@ app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH']=MAX_CONTENT_LENGTH
 Session(app)
 app.secret_key="Shyam268"
+
 
 @app.route('/')
 def index():
@@ -345,14 +346,14 @@ def updateitem(itemid):
                 flash('Item added sucessfully')
                 return redirect(url_for('updateitem',itemid=itemid))
         return render_template('updateitem.html',itemdata=itemdata)
-@app.route('/adminupdateprofile',methods=['GET','POST'])
+@app.route('/adminprofileupdate',methods=['GET','POST'])
 def adminprofileupdate():
     if not session.get('admin'):
         flash('to access admin dashboard pls login')
         return redirect(url_for('adminlogin'))
     try:
         cursor=mydb.cursor(buffered=True)
-        cursor.execute('select adminid,admin_username,admin_address,admin_phone,admining from admindata where admin_useremail=%s',[session.get('admin')])
+        cursor.execute('select adminid,admin_username,admin_address,admin_phno,admin_img from admindata where admin_useremail=%s',[session.get('admin')])
         admin_data=cursor.fetchone()
     except Exception as e:
         print(e)
@@ -360,18 +361,18 @@ def adminprofileupdate():
         return redirect(url_for('admindashboard'))
     else:
         if request.method=='POST':
-            update_username=request.form['adminname']
-            update_address=request.form['address']
-            update_phonenumber=request.form['ph_no']
+            updated_username=request.form['adminname']
+            updated_address=request.form['address']
+            updated_phonenumber=request.form['ph_no']
             updated_profiledata=request.files['file']
             print(updated_profiledata)
             filename=updated_profiledata.filename
-            if filename == '' or filename is None:
+            if filename=='' and filename==None:
                 filename=admin_data[4]
             else:
                 if updated_profiledata and filename:
                     if not allowed_file(filename):
-                        flash('File type is not allowed. pls give png,jpg,jpeg,webp')
+                        flash('File type is not allowed.pls give png,jpg,jpeg,webp')
                         return redirect(url_for('adminprofileupdate'))
                     orig_secure=secure_filename(filename)
                     ext=os.path.splitext(orig_secure)[1]
@@ -386,19 +387,21 @@ def adminprofileupdate():
                         print(e)
                         flash('Could not add file')
                         return redirect(url_for('adminprofileupdate'))
+            #db Connection to update 
             try:
                 cursor=mydb.cursor(buffered=True)
-                cursor.execute('update admindata set admin_username=%s,admin_address=%s,admin_phone=%s,admining=%s where adminid=%s',[update_username,update_address,update_phonenumber,filename,admin_data[0]])
+                cursor.execute('update admindata set admin_username=%s,admin_address=%s,admin_phno=%s,admin_img=%s where adminid=%s',[updated_username,updated_address,updated_phonenumber,filename,admin_data[0]])
                 mydb.commit()
                 cursor.close()
             except Exception as e:
                 print(e)
-                flash('DB error could not update data')
-                return redirect(url_for('adminprofileupdate'))
+                flash('DB Error Could not update data ')
+                return redirect(url_for('adminprofileupdate'))  
             else:
                 flash('Profile updated successfully')
-                return redirect(url_for('adminprofileupdate'))
+                return redirect(url_for('adminprofileupdate'))        
         return render_template('adminupdate.html',admin_data=admin_data)
+
 @app.route('/adminlogout')
 def adminlogout():
     if not session.get('admin'):
@@ -690,11 +693,12 @@ def success_cart():
         grand_total=items_total+delivery+tax
         print(amount,grand_total)
         if amount==grand_total:
+            
             try:
                 cursor=mydb.cursor(buffered=True)
                 cursor.execute('select userid from userdata where useremail=%s',[session.get('user')])
                 userid=cursor.fetchone()[0]
-                cursor.execute('insert into orders(razorpay_orderid,razorpay_paymentid,userid,total_amount,delivery,tax,grand_total) values(%s,%s,%s,%s,%s,%s,%s)',[order_id,payment_id,userid,items_total,delivery,tax,grand_total])
+                cursor.execute('insert into orders(razorpay_ordid,razorpay_paymentid,userid,total_amount,delivery,tax,grand_total) values(%s,%s,%s,%s,%s,%s,%s)',[order_id,payment_id,userid,items_total,delivery,tax,grand_total])
                 order_table_id=cursor.lastrowid
                 insert_itemdetails = '''
                 insert into order_items_details
@@ -954,4 +958,60 @@ def usernewpassword(data):
             flash('password updated successfully')
             return jsonify({"message": "password updated successfully"})
     return render_template('usernewpassword.html', data=data)
-app.run(debug=True,use_reloader=True)
+@app.route('/adminforgotpassword', methods=['GET', 'POST'])
+def adminforgotpassword():
+    if request.method == 'POST':
+        forgot_email = request.form.get('forgot_email')
+        try:
+            cursor = mydb.cursor(buffered=True)
+            cursor.execute('select count(*) from admindata where admin_useremail=%s',[forgot_email])
+            count_email = cursor.fetchone()[0]
+            if count_email == 1:
+                subject = "Admin Reset Link For Forgot Password"
+                body = f"""
+                Click the link below to reset your password:
+                {url_for('adminnewpassword',data=endata(forgot_email),_external=True)}"""
+                sendmail(to=forgot_email,subject=subject,body=body)
+                flash('Reset link has been sent to your email')
+                return redirect(url_for('adminforgotpassword'))
+            else:
+                flash('No email found. Please check again.')
+                return redirect(url_for('adminforgotpassword'))
+        except Exception as e:
+            print(e)
+            flash('Could not send reset link')
+            return redirect(url_for('adminforgotpassword'))
+    return render_template('adminforgotpwd.html')
+@app.route('/adminnewpassword/<data>', methods=['GET', 'PUT'])
+def adminnewpassword(data):
+    if request.method == 'PUT':
+        try:
+            forgot_email = dndata(data)
+
+            request_data = request.get_json()
+            npassword = request_data['new_password']
+
+            hash_password = bcrypt.generate_password_hash(npassword).decode('utf-8')
+
+            cursor = mydb.cursor(buffered=True)
+
+            # ✅ FIXED QUERY (THIS IS THE IMPORTANT PART)
+            cursor.execute(
+                '''UPDATE admindata 
+                   SET admin_password = %s 
+                   WHERE admin_useremail = %s''',
+                (hash_password, forgot_email)
+            )
+
+            mydb.commit()
+            cursor.close()
+
+            return jsonify({"message": "Password updated successfully"}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": "Could not update password"}), 400
+
+    return render_template('newpassword.html', data=data)
+if __name__ =='__main__':
+    app.run()

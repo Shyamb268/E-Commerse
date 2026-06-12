@@ -113,50 +113,50 @@
     <div class="mb-3">
       <label for="exampleFormControlInput1" class="form-label">Name</label>
       <input type="text" class="form-control" id="exampleFormControlInput1"
-        placeholder="Title of the storeditem" name="title" value="{{item_data[1]}}" required />
+        placeholder="Title of the storeditem" name="title" value="{{itemdata[1]}}" required />
     </div>
 
     <div class="mb-3">
       <label for="exampleFormControlTextarea1" class="form-label">Description</label>
       <textarea class="form-control" id="exampleFormControlTextarea1"
         placeholder="Description of the storeditem" name="Description" rows="4"
-        required>{{item_data[2]}}</textarea>
+        required>{{itemdata[2]}}</textarea>
     </div>
     <div class="mb-3">
       <label for="exampleFormControlTextarea1" class="form-label">About the item</label>
       <textarea class="form-control" id="exampleFormControlTextarea1"
         placeholder="Description of the storeditem" name="About_item" rows="4"
-        required>{{item_data[3]}}</textarea>
+        required>{{itemdata[3]}}</textarea>
     </div>
 
     <div class="box mb-3">
       <div>
         <label class="form-label">Quantity</label>
         <input type="number" class="form-control" name="quantity"
-          value="{{item_data[5]}}" required />
+          value="{{itemdata[5]}}" required />
       </div>
 
       <div>
         <label class="form-label">Price</label>
         <input type="number" class="form-control" name="price"
-          value="{{item_data[4]}}" required />
+          value="{{itemdata[4]}}" required />
       </div>
 
       <div>
         <label class="form-label">Category</label>
         <select name="category" class="form-select" required>
-          <option value="Home_Appliences" {% if item_data[6] == 'Home_Appliences' %}selected{% endif %}>Home Appliances</option>
-          <option value="grocery" {% if item_data[6] == 'grocery' %}selected{% endif %}>Grocery</option>
-          <option value="Fashion" {% if item_data[6] == 'Fashion' %}selected{% endif %}>Fashion</option>
-          <option value="Electronics" {% if item_data[6] == 'Electronics' %}selected{% endif %}>Electronics</option>
-          <option value="sports" {% if item_data[6] == 'sports' %}selected{% endif %}>Sports</option>
-          <option value="toys" {% if item_data[6] == 'toys' %}selected{% endif %}>Toys</option>
+          <option value="Home_Appliences" {% if itemdata[6] == 'Home_Appliences' %}selected{% endif %}>Home Appliances</option>
+          <option value="grocery" {% if itemdata[6] == 'grocery' %}selected{% endif %}>Grocery</option>
+          <option value="Fashion" {% if itemdata[6] == 'Fashion' %}selected{% endif %}>Fashion</option>
+          <option value="Electronics" {% if itemdata[6] == 'Electronics' %}selected{% endif %}>Electronics</option>
+          <option value="sports" {% if itemdata[6] == 'sports' %}selected{% endif %}>Sports</option>
+          <option value="toys" {% if itemdata[6] == 'toys' %}selected{% endif %}>Toys</option>
         </select>
       </div>
     </div>
 
     <div class="mb-3 text-center">
-      <img src="/static/uploads/{{item_data[7]}}" class="card-img-top" alt="storeditem Image">
+      <img src="/static/uploads/{{itemdata[7]}}" class="card-img-top" alt="storeditem Image">
       <label for="formFile" class="form-label mt-2">Change Image (optional)</label>
       <input class="form-control" type="file" name="file" id="formFile" />
     </div>
